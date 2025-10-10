@@ -1,0 +1,40 @@
+{
+  "name": "azot-extension-example",
+  "version": "1.0.0",
+  "description": "Demonstrates some of the capabilities of the Azot API.",
+  "homepage": "https://azot.so/",
+  "config": {
+    "title": "Azot Extension Example",
+    "icon": "https://azot.so/assets/logo-CzwwuC-B.png"
+  },
+  "keywords": [
+    "video"
+  ],
+  "author": {
+    "name": "Azot",
+    "url": "https://azot.so/"
+  },
+  "funding": {
+    "type": "individual",
+    "url": "https://azot.so/pricing"
+  },
+  "license": "MIT",
+  "main": "dist/main.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "azt dev",
+    "build": "azt build",
+    "test": "vitest"
+  },
+  "engines": {
+    "azot": ">=4.3.10"
+  },
+  "devDependencies": {
+    "@types/node": "^24.7.0",
+    "azot": "^5.0.0-alpha.7",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}
