@@ -1,22 +1,17 @@
 {
-  "name": "azot-extension-example",
+  "name": "unicoplay",
   "version": "1.0.0",
-  "description": "Demonstrates some of the capabilities of the Azot API.",
-  "homepage": "https://azot.so/",
+  "description": "This extension for Azot lets you to download content from the Unico Play streaming service.",
+  "homepage": "https://unicoplay.com",
   "config": {
-    "title": "Azot Extension Example",
-    "icon": "https://azot.so/assets/logo-CzwwuC-B.png"
+    "title": "Unico Play",
+    "icon": "https://unicoplay.com/static/images/header/logo.svg"
   },
   "keywords": [
-    "video"
+    "streaming-services"
   ],
   "author": {
-    "name": "Azot",
-    "url": "https://azot.so/"
-  },
-  "funding": {
-    "type": "individual",
-    "url": "https://azot.so/pricing"
+    "name": "Perfect03"
   },
   "license": "MIT",
   "main": "dist/main.js",
@@ -33,7 +28,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.7.0",
-    "azot": "^5.0.0-alpha.7",
+    "azot": "^5.0.0-alpha.8",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4"
   }
