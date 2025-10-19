@@ -1,6 +1,6 @@
 import type { ContentMetadata, ContentSource } from "azot";
 import { defineExtension, utils } from "azot";
-import { DOMAIN, DEFAULT_FETCH_PARAMS, API } from "./lib/constants";
+import { DOMAIN, API, API_KEY, DEVICE_TYPE } from "./lib/constants";
 import { checkAuth } from "./lib/auth";
 import { fetchContentMetadada, fetchStreamOptions } from "./lib/api";
 import { IContent } from "./lib/types";
@@ -36,11 +36,11 @@ const formContentMetadata = async (metadata: IContent, isSeries?: boolean) => {
   const stream = streams?.playlists?.[streams?.playlists?.length - 1];
   const url = `${API}${
     stream?.items?.[stream?.items?.length - 1]?.sources?.dash
-  }?apikey=${DEFAULT_FETCH_PARAMS.apikey}&auth_token=${localStorage.getItem(
+  }?auth_token=${localStorage.getItem(
     "authentication_token"
   )}`;
 
-  const source: ContentSource = { url };
+  const source: ContentSource = { url, headers: {'Api-Key': API_KEY[DEVICE_TYPE]} };
 
   if (streams?.license) {
     source.drm = {

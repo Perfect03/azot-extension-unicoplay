@@ -1,14 +1,23 @@
 import type { ILogin } from './types';
-import { DEFAULT_FETCH_PARAMS, DEFAULT_HEADERS, ROUTES } from './constants';
+import { DEFAULT_HEADERS, ROUTES, DEVICE_TYPE } from './constants';
 import { input } from 'azot';
+
+export const checkAuth = async () => {
+  if (!localStorage.getItem('authentication_token')) {
+    registerDevice();
+    await auth();
+    return;
+  }
+  await refresh()
+};
 
 export const registerDevice = async () => {
   console.debug('Register device...')
-  const deviceResponce = await fetch(`${ROUTES.device}?apikey=${DEFAULT_FETCH_PARAMS.apikey}`, {
+  const deviceResponce = await fetch(ROUTES.device, {
     method: 'POST',
     body: JSON.stringify({
       device_id: crypto.randomUUID(),
-      device_type: 'web'
+      device_type: DEVICE_TYPE
     }),
     headers: {
       ...DEFAULT_HEADERS,
@@ -38,11 +47,12 @@ export const registerDevice = async () => {
 
 export const refresh = async () => {
   console.debug('Refresh token...');
-  const refreshResponce = await fetch(`${ROUTES.authRefresh}?apikey=${DEFAULT_FETCH_PARAMS.apikey}`, {
+  const refreshResponce = await fetch(ROUTES.authRefresh, {
     method: 'POST',
     headers: {
       ...DEFAULT_HEADERS,
-      Cookie: `auth=${localStorage.getItem('authentication_token')}`,
+      //Cookie: `auth=${localStorage.getItem('authentication_token')}`,
+      'Authentification-Token': localStorage.getItem('authentication_token') as string,
       'Content-Type': 'application/json'
     }
   });
@@ -61,39 +71,6 @@ export const refresh = async () => {
   return profile;
 };
 
-export const checkAuth = async () => {
-  if (!localStorage.getItem('authentication_token')) {
-    await auth();
-    registerDevice();
-    return;
-  }
-
-  console.debug('Refresh token...');
-  const authRefresh = await fetch(`${ROUTES.authRefresh}?apikey=${DEFAULT_FETCH_PARAMS.apikey}`, {
-    method: 'POST',
-    body: JSON.stringify({
-      apikey: DEFAULT_FETCH_PARAMS.apikey
-    }),
-    headers: {
-      ...DEFAULT_HEADERS,
-      Cookie: `auth=${localStorage.getItem('authentication_token')}`,
-      'Content-Type': 'application/json'
-    }
-  })
-
-  const login = await authRefresh.json() as ILogin;
-
-  if (!login?.authentication_token) {
-    console.debug(login);
-    await exit()
-    await auth()
-    return;
-  }
-  
-  saveAuth(login)
-  localStorage.setItem('device_id', login.devices[0].uid)
-};
-
 export const auth = async () => {
   console.debug('Sign in Unico Play...');
 
@@ -103,7 +80,7 @@ export const auth = async () => {
 
   const way = isPhone(check) ? 'phone' : 'email'
 
-  const authCheck = await fetch(`${ROUTES.authCheck(way)}?apikey=${DEFAULT_FETCH_PARAMS.apikey}`, {
+  const authCheck = await fetch(ROUTES.authCheck(way), {
     body: JSON.stringify({
       [way]: check.trim()
     }),
@@ -122,13 +99,13 @@ export const auth = async () => {
 
   const { answer: password } = await input('Password: ');
 
-  const authLogin = await fetch(`${ROUTES.authLogin(way)}?apikey=${DEFAULT_FETCH_PARAMS.apikey}`, {
+  const authLogin = await fetch(ROUTES.authLogin(way), {
     body: JSON.stringify({
       password: btoa(password),
       is_encoded: true,
       client_platform: 'start',
-      device_type: 'web',
-      devide_id: crypto.randomUUID(),
+      device_type: DEVICE_TYPE,
+      devide_id: localStorage.getItem('device_id'),
       [way]: check
     }),
     method: 'POST',
