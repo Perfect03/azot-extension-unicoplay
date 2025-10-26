@@ -1,6 +1,6 @@
 {
   "name": "unicoplay",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "This extension for Azot lets you to download content from the Unico Play streaming service.",
   "homepage": "https://unicoplay.com",
   "config": {
@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.7.0",
-    "azot": "^5.0.0-alpha.8",
+    "azot": "^5.0.0-alpha.9",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4"
   }

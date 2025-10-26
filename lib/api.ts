@@ -1,6 +1,7 @@
 import type { IContent, IStreamOptions } from './types';
 import {  DEFAULT_HEADERS, ROUTES } from './constants';
-import { auth, exit } from './auth';
+import { auth, exit, registerDevice } from './auth';
+import { input } from 'azot';
 
 const request = async <T>(url: string, method: string = 'GET', params?: Record<string, string>) => {
   console.debug(`Getting data from ${url}...`);
@@ -9,8 +10,6 @@ const request = async <T>(url: string, method: string = 'GET', params?: Record<s
     ...(params ?? {}),
     device_id: localStorage.getItem('device_id') || crypto.randomUUID(),
   }).toString();
-
-  console.log(`${url}?${query}`)
 
   const response = await fetch(`${url}?${query}`, {
     method,
@@ -38,11 +37,20 @@ const request = async <T>(url: string, method: string = 'GET', params?: Record<s
   try {
     const parsed = JSON.parse(data)
     if (parsed.success === false) {
-      exit();
-      console.error(parsed.message || 'Unexpected Error');
-      await auth();
-      await request(url, method, params);
-      return;
+      switch(parsed.message) {
+        case 'Device count exceeded':
+          console.error('You’ve exceeded the maximum number of devices allowed for your account');
+          await input<'confirm'>('Please sign out of some devices in the “Devices” section of the Unico Play mobile app or on the website, then click “Enter”');
+          await registerDevice();
+          await auth();
+          return await request(url, method, params);
+        default:
+          exit();
+          console.error(parsed.message || 'Unexpected Error');
+          registerDevice();
+          await auth();
+          return await request(url, method, params);
+      }
     }
     return parsed as T;
   } catch (e) {

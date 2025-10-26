@@ -26,17 +26,17 @@ export const registerDevice = async () => {
   });
 
   if (deviceResponce?.status != 200) {
-    console.error('Unable to register device. Please try again later.');
     console.debug(await deviceResponce.text());
-    return;
+    exit();
+    throw new Error('Unable to register device. Please try again later.');
   }
 
   const device = await deviceResponce.json() as ILogin;
 
   if (!device?.devices) {
-    console.error('Device register error. Please try again later.');
     console.debug(device);
     exit();
+    throw new Error('Device register error. Please try again later.');
   }
   else {
     const uid = device.devices[0].uid
@@ -49,24 +49,36 @@ export const refresh = async () => {
   console.debug('Refresh token...');
   const refreshResponce = await fetch(ROUTES.authRefresh, {
     method: 'POST',
+    body: JSON.stringify({}),
     headers: {
       ...DEFAULT_HEADERS,
-      //Cookie: `auth=${localStorage.getItem('authentication_token')}`,
+      //Cookie: auth=${localStorage.getItem('authentication_token')},
       'Authentification-Token': localStorage.getItem('authentication_token') as string,
       'Content-Type': 'application/json'
     }
   });
 
-  let profile = await refreshResponce.json() as ILogin;
-
-  if (!profile?.authentication_token) {
+  let profile
+  
+  if (refreshResponce?.status != 200) {
     console.error('Authorization token update error. Please try signing in again.');
     console.debug(profile);
     exit();
     const newAuth = await auth();
     if (newAuth?._id) profile = newAuth;
   }
-  else saveAuth(profile)
+  else {
+    profile = await refreshResponce.json() as ILogin;
+
+    if (!profile?.authentication_token) {
+      console.error('Authorization token update error. Please try signing in again.');
+      console.debug(profile);
+      exit();
+      const newAuth = await auth();
+      if (newAuth?._id) profile = newAuth;
+    }
+    else saveAuth(profile)
+  }
 
   return profile;
 };
