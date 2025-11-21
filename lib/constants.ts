@@ -16,7 +16,7 @@ export const DEFAULT_HEADERS = {
 
 export const ROUTES = {
   authCheck: (way: 'email'|'phone') => `${API}/auth/${way}/check`,
-  authLogin: (way: 'email'|'phone') => `${API}/auth/${way}/login`,
+  authLogin: (way: 'email'|'phone') => `${API}/v2/auth/${way}/login`,
   authRefresh: `${API}/auth/refresh`,
   device: `${API}/auth/device/login`,
   cms: () => `${API}/${DEVICE_TYPE == 'android' ? 'mobile' : 'web'}/watch`,

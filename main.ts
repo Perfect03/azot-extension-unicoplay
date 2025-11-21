@@ -74,24 +74,22 @@ export default defineExtension({
               (el) => el.number == season
             );
           const eps = utils.extendEpisodes(args.episodes);
-          if (eps.items.size) {
-            for (const season of metadata.items) {
-              season.items = season.items?.filter((ep) =>
-                eps.has(ep.number, season.number)
-              );
-              if (season.items?.length) {
-                for (const episode of season.items) {
-                  const episodeTitle = episode.title;
-                  episode.title = metadata.title;
-                  episode.uid = `${season.uid}/${episode.uid}`;
-                  const result = await formContentMetadata(episode, true);
-                  results.push({
-                    ...result,
-                    episodeNumber: episode.number,
-                    seasonNumber: season.number,
-                    episodeTitle,
-                  });
-                }
+          for (const season of metadata.items) {
+            if (eps.items.size) season.items = season.items?.filter((ep) =>
+              eps.has(ep.number, season.number)
+            );
+            if (season.items?.length) {
+              for (const episode of season.items) {
+                const episodeTitle = episode.title;
+                episode.title = metadata.title;
+                episode.uid = `${season.uid}/${episode.uid}`;
+                const result = await formContentMetadata(episode, true);
+                results.push({
+                  ...result,
+                  episodeNumber: episode.number,
+                  seasonNumber: season.number,
+                  episodeTitle,
+                });
               }
             }
           }
